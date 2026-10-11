@@ -1,0 +1,45 @@
+---
+- name: Install and configure Apache
+  hosts: RHEL-01
+  become: true
+
+  vars:
+    web_package: httpd
+    web_service: httpd
+    page_title: "Patrick Lab"
+    server_name: "RHEL-01"
+    message: "If you're seeing this, Ansible rendered this page from a Jinja2 template."
+
+  tasks:
+    - name: Install Apache
+      ansible.builtin.dnf:
+        name: "{{ web_package }}"
+        state: present
+
+    - name: Start and enable Apache
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        state: started
+        enabled: true
+
+    - name: Allow HTTP through firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Deploy custom web page
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        state: restarted

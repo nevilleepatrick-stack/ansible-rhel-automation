@@ -1,0 +1,9 @@
+---
+- name: Configure RHEL lab server
+  hosts: RHEL-01
+  gather_facts: true
+
+  tasks:
+    - name: Display hostname
+      ansible.builtin.debug:
+        msg: "Ansible is managing {{ ansible_hostname }}"

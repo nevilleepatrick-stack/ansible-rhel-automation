@@ -15,3 +15,6 @@ secrets.yml
 # Python
 __pycache__/
 .venv/
+
+# Local lab inventory
+inventory.ini
